@@ -1,19 +1,4 @@
 # %%
-# In case of running on Google Colab
-%%capture
-
-# !apt-get install -qq curl g++ make
-# !curl -L http://download.osgeo.org/libspatialindex/spatialindex-src-1.8.5.tar.gz | tar xz
-# import os
-# os.chdir('spatialindex-src-1.8.5')|
-# !./configure
-# !make
-# !make install
-# !pip install rtree
-# !ldconfig
-# !pip install scikit-mobility
-
-# %%
 # General libraries
 import numpy as np
 import random
@@ -88,10 +73,10 @@ sns.set_style({'font.family': 'serif', 'font.serif': 'Computer Modern'})
 
 # %%
 # Taking a first look at the dataset
-air_quality_index = 'https://raw.githubusercontent.com/Bruno-Limon/air-quality-analysis/main/AQI-2016.csv'
+air_quality_index = 'https://raw.githubusercontent.com/Bruno-Limon/air-quality-analysis/main/Data/AQI-2016.csv'
 df_aqi = pd.read_csv(air_quality_index)
 
-display(pd.concat([df_aqi.head(2), df_aqi.tail(2)])) 
+display(pd.concat([df_aqi.head(2), df_aqi.tail(2)]))
 
 # %%
 df_aqi.info()
@@ -164,7 +149,7 @@ df_aqi_nulls.T
 
 # %% [markdown]
 # As seen from the previous dataframe, some monitoring stations must have had some sensors not functioning thruoughout the year, such as temperature and humidity in the "Santa Fe" station, since every value concerning them is missing.
-# 
+#
 # This might make these stations useless for some of the analysis and algorithms applied to the data
 
 # %%
@@ -658,7 +643,7 @@ plt.show()
 
 # %% [markdown]
 # As seen from the previous plot, different granularities capture different aspects of the data, considering that there are 8 stations to analyze, using all data might prove to be to dense for visualization and time series analysis, the monthly grouping on the other hand is very clear and simple, but perhaps too much, it might be useful to visualize general trends. Finally, the daily grouping hits just the sweet spot for visualizing and analyzing temporal data
-# 
+#
 
 # %%
 # Looking at the trends in the different monthly measurements across all year with on every station
@@ -931,7 +916,6 @@ for value in list_columns:
 
 
 # %%
-% % capture
 ox_factories = ox.geometries_from_place(
     "Guadalajara, Jalisco", {'landuse': 'industrial'}).to_crs('epsg:4326')
 ox_factories2 = ox.geometries_from_place(
