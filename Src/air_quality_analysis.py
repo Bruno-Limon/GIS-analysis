@@ -55,7 +55,6 @@ from scipy.spatial.distance import euclidean
 
 # import sklearn
 # from sklearn.metrics import mean_squared_error
-
 # %%
 # Setting up plot style
 sns.set_context(font_scale=2, rc={"font.size": 10,
@@ -63,8 +62,6 @@ sns.set_context(font_scale=2, rc={"font.size": 10,
                                   "axes.labelsize": 14})
 sns.set_style("whitegrid", {'grid.linestyle': '--', 'alpha': 0.25})
 sns.set_style({'font.family': 'serif', 'font.serif': 'Computer Modern'})
-
-
 # %% [markdown]
 # # **<font color="#ffb94f">1.0 DATA UNDERSTANDING & PREPARATION</font>**
 
@@ -76,11 +73,10 @@ sns.set_style({'font.family': 'serif', 'font.serif': 'Computer Modern'})
 air_quality_index = 'https://raw.githubusercontent.com/Bruno-Limon/air-quality-analysis/main/Data/AQI-2016.csv'
 df_aqi = pd.read_csv(air_quality_index)
 
-display(pd.concat([df_aqi.head(2), df_aqi.tail(2)]))
+# display(pd.concat([df_aqi.head(2), df_aqi.tail(2)]))
 
 # %%
 df_aqi.info()
-
 
 # %%
 # Creating datetime column using date and hour columns
@@ -110,7 +106,6 @@ dict_caseta = {'ATM': 'Atemajac',
 
 df_aqi["Caseta"] = df_aqi['CASETA '].map(dict_caseta)
 df_aqi.drop(['CASETA '], axis=1, inplace=True)
-
 
 # %% [markdown]
 # MISSING DATA
@@ -527,31 +522,27 @@ X_train = df_aqi_noanomalies.iloc[:, 1:9].values
 
 # %%
 # Grouping observations by individual days and monitoring point to end up with one record daily for each stations
-df_aqi_daily_station = df_aqi_noanomalies.groupby(
-    [df_aqi_noanomalies['Datetime'].dt.date, 'Station']).mean(numeric_only=False)
+df_aqi_daily_station = df_aqi_noanomalies.groupby([df_aqi_noanomalies['Datetime'].dt.date, 'Station']).mean(numeric_only=False)
 df_aqi_daily_station.drop(['Datetime'], axis=1, inplace=True)
 df_aqi_daily_station = df_aqi_daily_station.reset_index()
 
 df_aqi_daily_station.rename(columns={'Datetime': 'Date'}, inplace=True)
 print('Number of records:', len(df_aqi_daily_station))
-display(pd.concat([df_aqi_daily_station.head(
-    2), df_aqi_daily_station.tail(2)]))
+# display(pd.concat([df_aqi_daily_station.head(2), df_aqi_daily_station.tail(2)]))
 
 
 # %%
 # Grouping observations by individual days and monitoring point to end up with one record daily for each stations
-df_aqi_daily = df_aqi_noanomalies.iloc[:, 1:9].groupby(
-    [df_aqi_noanomalies['Datetime'].dt.date]).mean().reset_index()
+df_aqi_daily = df_aqi_noanomalies.iloc[:, 1:9].groupby([df_aqi_noanomalies['Datetime'].dt.date]).mean().reset_index()
 
 df_aqi_daily.rename(columns={'Datetime': 'Date'}, inplace=True)
 print('Number of records:', len(df_aqi_daily))
-display(pd.concat([df_aqi_daily.head(2), df_aqi_daily.tail(2)]))
+# display(pd.concat([df_aqi_daily.head(2), df_aqi_daily.tail(2)]))
 
 
 # %%
 # Grouping observations by month and monitoring point to end up with one record for each month and monitoring station
-df_aqi_monthly_station = df_aqi_noanomalies.groupby(
-    [df_aqi_noanomalies['Datetime'].dt.month, 'Station']).mean(numeric_only=False)
+df_aqi_monthly_station = df_aqi_noanomalies.groupby([df_aqi_noanomalies['Datetime'].dt.month, 'Station']).mean(numeric_only=False)
 df_aqi_monthly_station.drop(['Datetime'], axis=1, inplace=True)
 df_aqi_monthly_station = df_aqi_monthly_station.reset_index()
 
@@ -562,14 +553,12 @@ df_aqi_monthly_station.rename(columns={'Datetime': 'Month'}, inplace=True)
 df_aqi_monthly_station['Month'] = df_aqi_monthly_station['Month'].map(calendar)
 
 print('Number of records:', len(df_aqi_monthly_station))
-display(pd.concat([df_aqi_monthly_station.head(
-    2),  df_aqi_monthly_station.tail(2)]))
+# display(pd.concat([df_aqi_monthly_station.head(2),  df_aqi_monthly_station.tail(2)]))
 
 
 # %%
 # Grouping observations by individual hours of the day and monitoring point to end up with one record for each particular hour
-df_aqi_hour_station = df_aqi_noanomalies.groupby(
-    [df_aqi_noanomalies['Datetime'].dt.hour, 'Station']).mean(numeric_only=False)
+df_aqi_hour_station = df_aqi_noanomalies.groupby([df_aqi_noanomalies['Datetime'].dt.hour, 'Station']).mean(numeric_only=False)
 df_aqi_hour_station.drop(['Datetime'], axis=1, inplace=True)
 df_aqi_hour_station = df_aqi_hour_station.reset_index()
 
@@ -577,34 +566,29 @@ df_aqi_hour_station.rename(columns={'Datetime': 'Hour'}, inplace=True)
 df_aqi_hour_station['Hour'] = df_aqi_hour_station['Hour'] + 1
 
 print('Number of records:', len(df_aqi_hour_station))
-display(pd.concat([df_aqi_hour_station.head(2),  df_aqi_hour_station.tail(2)]))
+# display(pd.concat([df_aqi_hour_station.head(2),  df_aqi_hour_station.tail(2)]))
 
 
 # %%
 # Grouping observations by individual days of the week and monitoring point to end up with one record for each day of the week
-df_aqi_dayweek_station = df_aqi_noanomalies.groupby(
-    [df_aqi_noanomalies['Datetime'].dt.dayofweek, 'Station']).mean(numeric_only=False)
+df_aqi_dayweek_station = df_aqi_noanomalies.groupby([df_aqi_noanomalies['Datetime'].dt.dayofweek, 'Station']).mean(numeric_only=False)
 df_aqi_dayweek_station.drop(['Datetime'], axis=1, inplace=True)
 df_aqi_dayweek_station = df_aqi_dayweek_station.reset_index()
 
-df_aqi_dayweek_station.rename(
-    columns={'Datetime': 'Day of week'}, inplace=True)
+df_aqi_dayweek_station.rename(columns={'Datetime': 'Day of week'}, inplace=True)
 df_aqi_dayweek_station['Day of week'] = df_aqi_dayweek_station['Day of week'] + 1
 
 print('Number of records:', len(df_aqi_dayweek_station))
-display(pd.concat([df_aqi_dayweek_station.head(
-    2),  df_aqi_dayweek_station.tail(2)]))
+# display(pd.concat([df_aqi_dayweek_station.head(2),  df_aqi_dayweek_station.tail(2)]))
 
 
 # %%
 # Grouping observations by monitoring point to end up with one record for each station
-df_aqi_station = df_aqi_noanomalies.groupby(
-    [df_aqi_noanomalies['Station']]).mean().reset_index()
+df_aqi_station = df_aqi_noanomalies.groupby([df_aqi_noanomalies['Station']]).mean().reset_index()
 #df_aqi_station.drop(['Datetime'], axis = 1, inplace = True)
 
 print('Number of records:', len(df_aqi_station))
-display(pd.concat([df_aqi_station.head(2),  df_aqi_station.tail(2)]))
-
+# display(pd.concat([df_aqi_station.head(2),  df_aqi_station.tail(2)]))
 
 # %% [markdown]
 # # **<font color="#ffb94f">2.0 VISUALIZATION</font>**
@@ -615,8 +599,7 @@ display(pd.concat([df_aqi_station.head(2),  df_aqi_station.tail(2)]))
 # %%
 # Looking at temp measurement from a certain station with all the data available
 fig, ax = plt.subplots(figsize=(24, 4))
-ax = sns.lineplot(data=df_aqi_noanomalies[df_aqi_noanomalies['Station']
-                  == 'Atemajac'], x='Datetime', y='Temperature', lw=1)
+ax = sns.lineplot(data=df_aqi_noanomalies[df_aqi_noanomalies['Station']== 'Atemajac'], x='Datetime', y='Temperature', lw=1)
 ax.xaxis.set_major_locator(ticker.MultipleLocator(30))
 plt.title('Temperature values across time (1 hour window between measurements)')
 plt.ylim(5, 36)
@@ -624,8 +607,7 @@ plt.show()
 
 # Looking at temp measurement from a certain station with the data grouped by daily measurements
 fig, ax = plt.subplots(figsize=(24, 4))
-ax = sns.lineplot(
-    data=df_aqi_daily_station[df_aqi_daily_station['Station'] == 'Atemajac'], x='Date', y='Temperature', lw=1)
+ax = sns.lineplot(data=df_aqi_daily_station[df_aqi_daily_station['Station'] == 'Atemajac'], x='Date', y='Temperature', lw=1)
 ax.xaxis.set_major_locator(ticker.MultipleLocator(30))
 plt.title('Temperature values across the year (daily)')
 plt.ylim(5, 36)
@@ -633,8 +615,7 @@ plt.show()
 
 # Looking at temp measurement from a certain station with the data grouped by monthly measurements
 fig, ax = plt.subplots(figsize=(24, 4))
-ax = sns.lineplot(
-    data=df_aqi_monthly_station[df_aqi_monthly_station['Station'] == 'Atemajac'], x='Month', y='Temperature', lw=1)
+ax = sns.lineplot(data=df_aqi_monthly_station[df_aqi_monthly_station['Station'] == 'Atemajac'], x='Month', y='Temperature', lw=1)
 ax.xaxis.set_major_locator(ticker.MultipleLocator(1))
 plt.title('Temperature values across the year (monthly)')
 plt.ylim(5, 36)
@@ -779,7 +760,7 @@ for feature in list_columns:
 
 # %%
 # Official administrative divisions to use as tessellations for each geographical area
-url_area = 'https://raw.githubusercontent.com/Bruno-Limon/air-quality-analysis/main/area-ZMG.geojson'
+url_area = 'https://raw.githubusercontent.com/Bruno-Limon/air-quality-analysis/main/Data/area-ZMG.geojson'
 
 area_base = gpd.read_file(url_area)
 area_merged = gpd.GeoSeries(unary_union(area_base['geometry']))
@@ -857,10 +838,9 @@ voronoi_tessellation
 
 # %%
 # Merging voronoi tessellation with the data grouped by station so we can have
-gdf_merged_station = voronoi_tessellation.set_index('Station').join(
-    df_aqi_station.set_index('Station')).reset_index()
+gdf_merged_station = voronoi_tessellation.set_index('Station').join(df_aqi_station.set_index('Station')).reset_index()
 print('Number of records:', len(gdf_merged_station))
-display(pd.concat([gdf_merged_station.head(2),  gdf_merged_station.tail(2)]))
+# display(pd.concat([gdf_merged_station.head(2),  gdf_merged_station.tail(2)]))
 
 
 # %%
@@ -899,8 +879,8 @@ for value in list_columns:
                                mapbox_style='carto-positron',
                                zoom=8,
                                color_continuous_scale='RdBu_r',
-                               range_color=(min(df_aqi_monthly_station[value]), max(
-                                   df_aqi_monthly_station[value])),
+                               range_color=(min(df_aqi_monthly_station[value]),
+                                            max(df_aqi_monthly_station[value])),
                                animation_frame='Month',
                                title=value,
                                opacity=.5,
