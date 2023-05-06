@@ -1,12 +1,9 @@
 # %%
 # General libraries
 import numpy as np
-import random
 import pandas as pd
-import datetime
 import collections
-from sklearn.impute import SimpleImputer
-from scipy.stats import gaussian_kde, iqr
+from scipy.stats import gaussian_kde
 
 # Data visualization
 import matplotlib.pyplot as plt
@@ -80,8 +77,7 @@ df_aqi.info()
 
 # %%
 # Creating datetime column using date and hour columns
-df_aqi.insert(0, 'Datetime', pd.to_datetime(
-    df_aqi['Fecha'] + ' ' + df_aqi['Hora']))
+df_aqi.insert(0, 'Datetime', pd.to_datetime(df_aqi['Fecha'] + ' ' + df_aqi['Hora']))
 # df_aqi.insert(0, 'Datetime', pd.to_datetime(df_aqi['Fecha'] + ' ' + df_aqi['Hora'], format = 'mixed'))
 df_aqi.drop(['Fecha', 'Hora'], axis=1, inplace=True)
 
