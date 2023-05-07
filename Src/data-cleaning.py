@@ -1,10 +1,9 @@
 import numpy as np
 import pandas as pd
 import collections
-import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 from sklearn.cluster import DBSCAN
-from sklearn.neighbors import LocalOutlierFactor, NearestNeighbors
+from sklearn.neighbors import LocalOutlierFactor
 from sklearn.ensemble import IsolationForest
 
 """DATA CLEANING"""
@@ -54,29 +53,13 @@ X_train = df_aqi.iloc[:, 1:9].values
 pca = PCA(n_components=2)
 X_train_pca = pca.fit_transform(X_train)
 
-# Calculating distances among pair of neighbor points
-nbr = NearestNeighbors(n_neighbors=2)
-nbrs = nbr.fit(X_train_pca)
-distances, indices = nbrs.kneighbors(X_train_pca)
-distances = np.sort(distances, axis=0)
-distances = distances[:, 1]
-
 # DBSCAN model using eps obtained from previous elbow method
 dbscan = DBSCAN(eps=3.8, min_samples=4)
 dbscan.fit(X_train_pca)
-
 # Identifiying outliers found by DBSCAN
 anomalies_db = np.where(dbscan.labels_ == -1)
 anomalies_db_pca = X_train_pca[anomalies_db]
 print('Outliers found by DBSCAN:', len(anomalies_db_pca))
-
-# Plotting outliers on the 2 dimensional PCA space
-fig = plt.figure(figsize=(12, 4))
-plt.scatter(X_train_pca[:, 0], X_train_pca[:, 1], color='skyblue', s=2)
-plt.scatter(anomalies_db_pca[:, 0],
-            anomalies_db_pca[:, 1], color='orangered', s=2)
-plt.title("Outliers found by DBSCAN")
-plt.show()
 
 # Isolation Forest model
 isol = IsolationForest(bootstrap=True,
@@ -84,39 +67,19 @@ isol = IsolationForest(bootstrap=True,
                        max_samples=200,
                        n_estimators=1000,
                        n_jobs=-1).fit(X_train_pca)
-
 # Identifiying outliers found by Isolation Forest
 outliers_isol = isol.predict(X_train_pca)
 anomalies_isol = np.where(outliers_isol == -1)
 anomalies_isol_pca = X_train_pca[anomalies_isol]
-print('Outliers found by Isolation Forest:', len(anomalies_isol_pca))
-
-# Plotting outliers
-fig = plt.figure(figsize=(12, 4))
-plt.scatter(X_train_pca[:, 0], X_train_pca[:, 1], color='skyblue', s=2)
-plt.scatter(anomalies_isol_pca[:, 0],
-            anomalies_isol_pca[:, 1], color='orangered', s=2)
-plt.title("Outliers found by Isolation Forest")
-plt.show()
 
 # Local Outlier Factor
 lof = LocalOutlierFactor(n_neighbors=1000,
                          contamination=.002,
                          algorithm='kd_tree')
-
 # Identifiying outliers found by Local Outlier Factor
 outliers_lof = lof.fit_predict(X_train_pca)
 anomalies_lof = np.where(outliers_lof == -1)
 anomalies_lof_pca = X_train_pca[anomalies_lof]
-print('Outliers found by LOF:', len(anomalies_lof_pca))
-
-# Plotting outliers
-fig = plt.figure(figsize=(12, 4))
-plt.scatter(X_train_pca[:, 0], X_train_pca[:, 1], color='skyblue', s=2)
-plt.scatter(anomalies_lof_pca[:, 0],
-            anomalies_lof_pca[:, 1], color='orangered', s=2)
-plt.title("Outliers found by Local Outlier Factor")
-plt.show()
 
 # Making list with all outliers, including duplicates
 list_all_outliers = []
@@ -131,32 +94,7 @@ for item, count in collections.Counter(list_all_outliers).items():
     if count >= 2:
         list_final_outliers.append(item)
 
-anomalies_final_pca = X_train_pca[list_final_outliers]
-print('Final outliers:', len(anomalies_final_pca))
-
-# Final plot of outliers
-fig = plt.figure(figsize=(12, 4))
-plt.scatter(X_train_pca[:, 0], X_train_pca[:, 1], color='skyblue', s=2)
-plt.scatter(anomalies_final_pca[:, 0],
-            anomalies_final_pca[:, 1], color='orangered', s=2)
-plt.title("Outliers found by at least 2/3 methods")
-plt.show()
-
 # Creating dataframe without anoamlies
 df_aqi_noanomalies = df_aqi.copy()
 df_aqi_noanomalies.drop(list_final_outliers, inplace=True)
 df_aqi_noanomalies = df_aqi_noanomalies.reset_index(drop=True)
-X_train_noanomalies = df_aqi_noanomalies.iloc[:, 1:9].values
-
-# Fitting PCA model with values without outliers
-pca = PCA(n_components=2)
-X_train_noanomalies_pca = pca.fit_transform(X_train_noanomalies)
-
-# PCA 2 dimensional plot without outliers
-fig = plt.figure(figsize=(12, 4))
-plt.scatter(X_train_noanomalies_pca[:, 0],
-            X_train_noanomalies_pca[:, 1], color='skyblue', s=2)
-plt.scatter(anomalies_final_pca[:, 0],
-            anomalies_final_pca[:, 1], color='white', s=2)
-plt.title("PCA without outliers")
-plt.show()
