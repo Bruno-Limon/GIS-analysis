@@ -8,8 +8,7 @@ from sklearn.ensemble import IsolationForest
 
 """DATA CLEANING"""
 
-air_quality_index = 'https://raw.githubusercontent.com/Bruno-Limon/air-quality-analysis/main/Data/AQI-2016.csv'
-df_aqi = pd.read_csv(air_quality_index)
+df_aqi = pd.read_csv(r"c:/Users/Pavilion/Desktop/Github/air-quality-analysis/Data/AQI-2016.csv")
 df_aqi.insert(0, 'Datetime', pd.to_datetime(df_aqi['Fecha'] + ' ' + df_aqi['Hora']))
 df_aqi.drop(['Fecha', 'Hora'], axis=1, inplace=True)
 
@@ -59,7 +58,6 @@ dbscan.fit(X_train_pca)
 # Identifiying outliers found by DBSCAN
 anomalies_db = np.where(dbscan.labels_ == -1)
 anomalies_db_pca = X_train_pca[anomalies_db]
-print('Outliers found by DBSCAN:', len(anomalies_db_pca))
 
 # Isolation Forest model
 isol = IsolationForest(bootstrap=True,
@@ -98,3 +96,58 @@ for item, count in collections.Counter(list_all_outliers).items():
 df_aqi_noanomalies = df_aqi.copy()
 df_aqi_noanomalies.drop(list_final_outliers, inplace=True)
 df_aqi_noanomalies = df_aqi_noanomalies.reset_index(drop=True)
+
+""" CREATING DIFFERENT GRANULARITIES"""
+
+# Grouping observations by individual days and monitoring point to end up with one record daily for each stations
+df_aqi_daily_station = df_aqi_noanomalies.groupby([df_aqi_noanomalies['Datetime'].dt.date, 'Station']).mean(numeric_only=False)
+df_aqi_daily_station.drop(['Datetime'], axis=1, inplace=True)
+df_aqi_daily_station = df_aqi_daily_station.reset_index()
+
+df_aqi_daily_station.rename(columns={'Datetime': 'Date'}, inplace=True)
+print('Number of records:', len(df_aqi_daily_station))
+
+# Grouping observations by individual days and monitoring point to end up with one record daily for each stations
+df_aqi_daily = df_aqi_noanomalies.iloc[:, 1:9].groupby([df_aqi_noanomalies['Datetime'].dt.date]).mean().reset_index()
+
+df_aqi_daily.rename(columns={'Datetime': 'Date'}, inplace=True)
+print('Number of records:', len(df_aqi_daily))
+
+# Grouping observations by month and monitoring point to end up with one record for each month and monitoring station
+df_aqi_monthly_station = df_aqi_noanomalies.groupby([df_aqi_noanomalies['Datetime'].dt.month, 'Station']).mean(numeric_only=False)
+df_aqi_monthly_station.drop(['Datetime'], axis=1, inplace=True)
+df_aqi_monthly_station = df_aqi_monthly_station.reset_index()
+
+calendar = {1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'Jun',
+            7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec'}
+
+df_aqi_monthly_station.rename(columns={'Datetime': 'Month'}, inplace=True)
+df_aqi_monthly_station['Month'] = df_aqi_monthly_station['Month'].map(calendar)
+
+print('Number of records:', len(df_aqi_monthly_station))
+
+# Grouping observations by individual hours of the day and monitoring point to end up with one record for each particular hour
+df_aqi_hour_station = df_aqi_noanomalies.groupby([df_aqi_noanomalies['Datetime'].dt.hour, 'Station']).mean(numeric_only=False)
+df_aqi_hour_station.drop(['Datetime'], axis=1, inplace=True)
+df_aqi_hour_station = df_aqi_hour_station.reset_index()
+
+df_aqi_hour_station.rename(columns={'Datetime': 'Hour'}, inplace=True)
+df_aqi_hour_station['Hour'] = df_aqi_hour_station['Hour'] + 1
+
+print('Number of records:', len(df_aqi_hour_station))
+
+# Grouping observations by individual days of the week and monitoring point to end up with one record for each day of the week
+df_aqi_dayweek_station = df_aqi_noanomalies.groupby([df_aqi_noanomalies['Datetime'].dt.dayofweek, 'Station']).mean(numeric_only=False)
+df_aqi_dayweek_station.drop(['Datetime'], axis=1, inplace=True)
+df_aqi_dayweek_station = df_aqi_dayweek_station.reset_index()
+
+df_aqi_dayweek_station.rename(columns={'Datetime': 'Day of week'}, inplace=True)
+df_aqi_dayweek_station['Day of week'] = df_aqi_dayweek_station['Day of week'] + 1
+
+print('Number of records:', len(df_aqi_dayweek_station))
+
+# Grouping observations by monitoring point to end up with one record for each station
+df_aqi_station = df_aqi_noanomalies.groupby([df_aqi_noanomalies['Station']]).mean().reset_index()
+#df_aqi_station.drop(['Datetime'], axis = 1, inplace = True)
+
+print('Number of records:', len(df_aqi_station))
