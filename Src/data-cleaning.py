@@ -105,13 +105,13 @@ df_aqi_daily_station.drop(['Datetime'], axis=1, inplace=True)
 df_aqi_daily_station = df_aqi_daily_station.reset_index()
 
 df_aqi_daily_station.rename(columns={'Datetime': 'Date'}, inplace=True)
-print('Number of records:', len(df_aqi_daily_station))
+df_aqi_daily_station.to_csv("c:/Users/Pavilion/Desktop/Github/air-quality-analysis/Data/AQI-2016-dailystation.csv")
 
 # Grouping observations by individual days and monitoring point to end up with one record daily for each stations
 df_aqi_daily = df_aqi_noanomalies.iloc[:, 1:9].groupby([df_aqi_noanomalies['Datetime'].dt.date]).mean().reset_index()
 
 df_aqi_daily.rename(columns={'Datetime': 'Date'}, inplace=True)
-print('Number of records:', len(df_aqi_daily))
+df_aqi_daily.to_csv("c:/Users/Pavilion/Desktop/Github/air-quality-analysis/Data/AQI-2016-daily.csv")
 
 # Grouping observations by month and monitoring point to end up with one record for each month and monitoring station
 df_aqi_monthly_station = df_aqi_noanomalies.groupby([df_aqi_noanomalies['Datetime'].dt.month, 'Station']).mean(numeric_only=False)
@@ -124,7 +124,7 @@ calendar = {1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'Jun',
 df_aqi_monthly_station.rename(columns={'Datetime': 'Month'}, inplace=True)
 df_aqi_monthly_station['Month'] = df_aqi_monthly_station['Month'].map(calendar)
 
-print('Number of records:', len(df_aqi_monthly_station))
+df_aqi_monthly_station.to_csv("c:/Users/Pavilion/Desktop/Github/air-quality-analysis/Data/AQI-2016-monthlystation.csv")
 
 # Grouping observations by individual hours of the day and monitoring point to end up with one record for each particular hour
 df_aqi_hour_station = df_aqi_noanomalies.groupby([df_aqi_noanomalies['Datetime'].dt.hour, 'Station']).mean(numeric_only=False)
@@ -134,7 +134,7 @@ df_aqi_hour_station = df_aqi_hour_station.reset_index()
 df_aqi_hour_station.rename(columns={'Datetime': 'Hour'}, inplace=True)
 df_aqi_hour_station['Hour'] = df_aqi_hour_station['Hour'] + 1
 
-print('Number of records:', len(df_aqi_hour_station))
+df_aqi_hour_station.to_csv("c:/Users/Pavilion/Desktop/Github/air-quality-analysis/Data/AQI-2016-hourstation.csv")
 
 # Grouping observations by individual days of the week and monitoring point to end up with one record for each day of the week
 df_aqi_dayweek_station = df_aqi_noanomalies.groupby([df_aqi_noanomalies['Datetime'].dt.dayofweek, 'Station']).mean(numeric_only=False)
@@ -144,10 +144,10 @@ df_aqi_dayweek_station = df_aqi_dayweek_station.reset_index()
 df_aqi_dayweek_station.rename(columns={'Datetime': 'Day of week'}, inplace=True)
 df_aqi_dayweek_station['Day of week'] = df_aqi_dayweek_station['Day of week'] + 1
 
-print('Number of records:', len(df_aqi_dayweek_station))
+df_aqi_dayweek_station.to_csv("c:/Users/Pavilion/Desktop/Github/air-quality-analysis/Data/AQI-2016-daiweekstation.csv")
 
 # Grouping observations by monitoring point to end up with one record for each station
 df_aqi_station = df_aqi_noanomalies.groupby([df_aqi_noanomalies['Station']]).mean().reset_index()
 #df_aqi_station.drop(['Datetime'], axis = 1, inplace = True)
 
-print('Number of records:', len(df_aqi_station))
+df_aqi_station.to_csv("c:/Users/Pavilion/Desktop/Github/air-quality-analysis/Data/AQI-2016-station.csv")
