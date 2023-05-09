@@ -8,7 +8,8 @@ from sklearn.ensemble import IsolationForest
 
 """DATA CLEANING"""
 
-df_aqi = pd.read_csv(r"c:/Users/Pavilion/Desktop/Github/air-quality-analysis/Data/AQI-2016.csv")
+data_path = "c:/Users/Pavilion/Desktop/Github/air-quality-analysis/Data/AQI-2016.csv"
+df_aqi = pd.read_csv(data_path)
 df_aqi.insert(0, 'Datetime', pd.to_datetime(df_aqi['Fecha'] + ' ' + df_aqi['Hora']))
 df_aqi.drop(['Fecha', 'Hora'], axis=1, inplace=True)
 
@@ -148,6 +149,4 @@ df_aqi_dayweek_station.to_csv("c:/Users/Pavilion/Desktop/Github/air-quality-anal
 
 # Grouping observations by monitoring point to end up with one record for each station
 df_aqi_station = df_aqi_noanomalies.groupby([df_aqi_noanomalies['Station']]).mean().reset_index()
-#df_aqi_station.drop(['Datetime'], axis = 1, inplace = True)
-
 df_aqi_station.to_csv("c:/Users/Pavilion/Desktop/Github/air-quality-analysis/Data/AQI-2016-station.csv")
